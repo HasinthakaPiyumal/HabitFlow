@@ -1,97 +1,159 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Here’s a **well-structured and professional README-style document** for your **Habit Tracker App**, with clear sections and formatting:
 
-# Getting Started
+---
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+# 📱 Habit Tracker App
 
-## Step 1: Start Metro
+A beautifully designed mobile application that helps users build and maintain healthy habits using visual tracking, streaks, and detailed statistics.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+![Habit Tracker Screenshot](https://example.com/habit-tracker-screenshot.png)
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
+## 📖 Project Description
+
+**Habit Tracker** is a feature-rich mobile app built with **React Native CLI** that enables users to:
+
+- Create and manage habits
+- Track progress on a daily, weekly, or monthly basis
+- Visualize performance using engaging charts and animations
+- Maintain streaks and build consistency
+
+The app offers a modern, clean UI with smooth animations and support for both **light and dark themes**.
+
+---
+
+## ✨ Key Features
+
+- ✅ Create & manage customizable habits (`daily`, `weekly`, `monthly`)
+- 📆 Calendar view for reviewing past performance
+- 🔥 Track streaks & visualize progress
+- 🎨 Beautiful animated onboarding experience
+- 📊 Statistics dashboard with progress charts
+- 🌓 Light/Dark theme toggle
+- 🔐 User authentication & profile management
+- 🎉 Habit completion animations with confetti
+- 📱 Responsive design for Android and iOS
+
+---
+
+## ⚙️ Technologies Used
+
+| Technology                    | Purpose                               |
+| ----------------------------- | ------------------------------------- |
+| **React Native CLI**          | Core mobile app framework             |
+| **TypeScript**                | Type-safe development                 |
+| **AsyncStorage**              | Local data persistence                |
+| **React Navigation**          | App routing & screen transitions      |
+| **React Native Vector Icons** | Iconography                           |
+| **React Native Reanimated**   | Smooth, performant animations         |
+| **Gesture Handler**           | Touch interactions                    |
+| **React Native SVG**          | SVG rendering                         |
+| **Chart Kit**                 | Progress and analytics charts         |
+| **React Native Calendar**     | Calendar view integration             |
+| **Status Bar Height**         | Device-safe UI handling               |
+| **Zod**                       | Schema-based form and data validation |
+
+---
+
+## 🏗️ Application Structure
+
+### 🔄 Animations & Visual Effects
+
+- **Onboarding Animations:**
+
+  - Slide transitions between screens
+  - Interactive illustrations
+  - Animated progress indicators
+
+- **UI Animations:**
+
+  - Confetti effects on habit completion
+  - Spring modal transitions
+  - Theme toggle with smooth transition
+
+---
+
+## 🚀 Onboarding Experience
+
+| Screen          | Description                                    |
+| --------------- | ---------------------------------------------- |
+| **Welcome**     | App intro with animated logo                   |
+| **Features**    | Key highlights with illustrations              |
+| **Habit Types** | Explains daily, weekly, monthly tracking       |
+| **Streaks**     | Visuals on streak tracking with animation      |
+| **Get Started** | Registration/login flow with smooth navigation |
+
+---
+
+## 🛠 Installation & Setup
+
+### 🔧 Prerequisites
+
+- Node.js (v16+)
+- npm or yarn
+- React Native CLI
+- Android Studio (Android)
+- Xcode (macOS for iOS development)
+
+### 📥 Getting Started
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/HasinthakaPiyumal/HabitFlow.git
+cd habit-tracker
+
+# 2. Install dependencies
+npm install
+
+# 3. (macOS only) Install iOS pods
+cd ios && pod install && cd ..
+
+# 4. Start Metro bundler
 npm start
 
-# OR using Yarn
-yarn start
+# 5. Run the app
+npx react-native run-android  # for Android
+npx react-native run-ios      # for iOS (macOS only)
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## 📲 Usage
 
-### Android
+1. **Launch App** → Experience onboarding
+2. **Create Account** → Register/login
+3. **Add Habits** → Choose name, description, frequency
+4. **Track Habits** → Mark as done daily/weekly/monthly
+5. **View Stats** → Monitor your streaks & performance
+6. **Customize** → Toggle theme & manage profile in settings
 
-```sh
-# Using npm
-npm run android
+---
 
-# OR using Yarn
-yarn android
+## 🧰 Troubleshooting
+
+### Build Errors (iOS/Android)
+
+```bash
+# Clean build (Android)
+cd android && ./gradlew clean
+
+# Clean pods (iOS)
+cd ios && pod deintegrate && pod install
 ```
 
-### iOS
+### Metro Issues
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+npx react-native start --reset-cache
 ```
 
-Then, and every time you update your native dependencies, run:
+---
 
-```sh
-bundle exec pod install
-```
+## 🔮 Future Enhancements
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- ☁️ Cloud sync for multi-device support
+- 📤 Social sharing for streaks and achievements
+- 📈 Enhanced analytics and insights
+- 🔔 Habit reminders and push notifications
+- 🧩 Custom habit categories and icons
