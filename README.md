@@ -5,8 +5,6 @@
 
 A beautifully designed mobile application that helps users build and maintain healthy habits using visual tracking, streaks, and detailed statistics.
 
-![Habit Tracker Screenshot](https://example.com/habit-tracker-screenshot.png)
-
 ---
 
 ## 📖 Project Description
@@ -149,10 +147,10 @@ npx react-native start --reset-cache
 
 ---
 
-## 🔮 Future Enhancements
+## Demo
 
-- ☁️ Cloud sync for multi-device support
-- 📤 Social sharing for streaks and achievements
-- 📈 Enhanced analytics and insights
-- 🔔 Habit reminders and push notifications
-- 🧩 Custom habit categories and icons
+
+
+https://github.com/user-attachments/assets/037ce209-0781-4a3e-a515-d99bad54d8b3
+
+
