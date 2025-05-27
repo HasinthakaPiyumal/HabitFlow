@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'link';
 export type ButtonSize = 'small' | 'medium' | 'large';
 
-const Button = ({ onPress, title, width, variant = 'outline', mt }: { onPress: ((event: GestureResponderEvent) => void) | undefined, title: String, variant?: ButtonVariant, mt?: number, width?: number | string }) => {
+const Button = ({ disabled, onPress, title, width, variant = 'outline', mt }: { onPress: ((event: GestureResponderEvent) => void) | undefined, title: String, variant?: ButtonVariant, mt?: number, width?: number | string, disabled?: boolean }) => {
     const { theme } = useTheme();
     const themedStyles = {
         ...styles,
@@ -26,7 +26,7 @@ const Button = ({ onPress, title, width, variant = 'outline', mt }: { onPress: (
         }
     };
     return (
-        <TouchableOpacity style={themedStyles.button} onPress={onPress}>
+        <TouchableOpacity disabled={disabled} style={themedStyles.button} onPress={onPress}>
             <Text style={themedStyles.text}>{title}</Text>
         </TouchableOpacity >
     );

@@ -10,7 +10,9 @@ interface Props {
     label?: string
     secureTextEntry?: boolean
     style?: object
-    width?: number | string
+    width?: number | string,
+    numberOfLines?: number,
+    multiline?: boolean,
 }
 
 const screenWidth = Dimensions.get('window').width;
@@ -23,6 +25,8 @@ const TextInput: React.FC<Props> = ({
     placeholder,
     width,
     secureTextEntry = false,
+    multiline = false,
+    numberOfLines = 3,
     style,
 }) => {
     const { theme } = useTheme();
@@ -37,9 +41,11 @@ const TextInput: React.FC<Props> = ({
                     placeholder={placeholder}
                     secureTextEntry={secureTextEntry}
                     placeholderTextColor={theme.secondary}
+                    multiline={multiline}
+                    numberOfLines={numberOfLines}
                     style={[
                         styles.input,
-                        { color: theme.text, backgroundColor: theme.card },
+                        { color: theme.text, backgroundColor: theme.card, height: multiline ? ((numberOfLines + 1) * 20) : 40 },
                         style,
                     ]}
                 />
@@ -51,7 +57,7 @@ const TextInput: React.FC<Props> = ({
 const styles = StyleSheet.create({
     container: {
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 6,
         // padding: 4,
         marginVertical: 8,
         width: defaultWidth,
@@ -61,7 +67,7 @@ const styles = StyleSheet.create({
         height: 40,
         fontSize: 16,
         padding: 8,
-        borderRadius: 8,
+        borderRadius: 6,
     },
 });
 

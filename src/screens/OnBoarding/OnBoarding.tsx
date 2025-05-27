@@ -8,6 +8,7 @@ import Button from '../../components/Button/Button';
 import LottieView from 'lottie-react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const OnBoardingOne = () => {
@@ -148,8 +149,16 @@ const OnBoardingOne = () => {
     }, [onBoardingScreen, safeAreaBackgroundColor, firstAnimationStyleProps, secondAnimationStyleProps, thirdAnimationStyleProps, firstDotWidth, secondDotWidth, thirdDotWidth]);
 
 
+    const markOnboardingComplete = async () => {
+        try {
+            await AsyncStorage.setItem('onboardingComplete', 'true');
+            console.log('Onboarding marked as complete');
+        } catch (error) {
+            console.error('Error marking onboarding as complete:', error);
+        }
+    };
+
     return (
-        // <SafeAreaView style={themedStyles.safeArea}>
         <Animated.View style={containerStyle}>
             <Animated.View
                 style={firstAnimationStyle}
@@ -193,22 +202,31 @@ const OnBoardingOne = () => {
                 </Animated.View>
                 <View style={styles.bottomButtonWrapper}>
                     <Button
-                        title="Skip"
+                        title={onBoardingScreen === 0 ? 'Skip' : 'Back'}
                         variant="link"
                         onPress={() => {
-                            navigation.navigate('Register');
+                            if (onBoardingScreen === 0) {
+                                markOnboardingComplete();
+                                navigation.navigate('Register');
+                            } else {
+                                setOnBoardingScreen((prev) => (prev - 1) % 3);
+                            }
                         }}
                     />
                     {onBoardingScreen === 2 ?
                         <Button
                             title="Get Started"
                             variant="primary"
-                            onPress={() => {
-                                navigation.navigate('Register');
+                            onPress={async () => {
+                                await markOnboardingComplete();
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'Register' }],
+                                });
                             }} />
                         : <Icon
                             name="circle-chevron-right"
-                            size={48}
+                            size={44}
                             color={theme.textSecondary}
                             style={{ color: theme.primary }}
                             onPress={() => {
@@ -218,7 +236,6 @@ const OnBoardingOne = () => {
                 </View>
             </View>
         </Animated.View>
-        // {/* </SafeAreaView> */ }
     );
 };
 

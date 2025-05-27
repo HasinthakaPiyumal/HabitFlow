@@ -7,6 +7,7 @@ export interface TextStyles {
     body: TextStyle;
     caption: TextStyle;
     bold: TextStyle;
+    title: TextStyle;
     label: TextStyle;
     error: TextStyle;
 }
@@ -16,6 +17,12 @@ export const getTextStyles = (theme: Theme): TextStyles => ({
         fontSize: 24,
         fontWeight: '700',
         color: theme.textPrimary,
+        marginBottom: 8,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: theme.textSecondary,
         marginBottom: 8,
     },
     subheading: {
