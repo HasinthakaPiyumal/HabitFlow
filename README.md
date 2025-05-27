@@ -1,6 +1,5 @@
-Here’s a **well-structured and professional README-style document** for your **Habit Tracker App**, with clear sections and formatting:
-
----
+### SENG 31323 - Mobile Computing Technology
+### SE/2021/036 - Hasinthaka Piyumal Senanayaka
 
 # 📱 Habit Tracker App
 
