@@ -22,10 +22,10 @@ export const lightTheme = {
 
 export const darkTheme = {
   isDark: true,
-  background: '#1a1030', // Very deep, dark purple
+  background: '#221f29', // Very deep, dark purple
   text: '#e0e0e0', // Light gray
   primary: '#9661ff', // Vibrant dark orchid
-  secondary: '#ab47bc', // Lighter purple
+  secondary: '#ffffffdd', // Lighter purple
   card: '#2c1e40', // Darker muted purple
   border: '#724fdb', // Deep purple border
   safeAreaBackground: '#1a1030', // Consistent base

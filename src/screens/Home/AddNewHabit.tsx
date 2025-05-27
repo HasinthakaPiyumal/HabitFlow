@@ -14,6 +14,7 @@ import SelectInput from '../../components/SelectInput/SelectInput';
 import Button from '../../components/Button/Button';
 import AppBarTitle from '../../components/AppBarTitle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PaperAlert from '../../components/PaperAlert';
 
 const statusBarHeight = getStatusBarHeight();
 
@@ -45,6 +46,9 @@ const AddNewHabit = () => {
     const [selectedIcon, setSelectedIcon] = useState<string>('water-outline');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+    const [showAlert, setShowAlert] = useState(false);
+
     const [categoryError, setCategoryError] = useState<string | null>(null);
     const [frequencyError, setFrequencyError] = useState<string | null>(null);
 
@@ -55,6 +59,11 @@ const AddNewHabit = () => {
             description: '',
         },
     });
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
+        navigation.goBack(); // Or go somewhere else
+    };
 
     const categories = [
         { label: 'Health', value: 'health' },
@@ -131,11 +140,12 @@ const AddNewHabit = () => {
             await AsyncStorage.setItem('userHabits', JSON.stringify(updatedHabits));
 
             console.log('Habit saved successfully', newHabit);
-            Alert.alert(
-                "Success",
-                "Habit created successfully!",
-                [{ text: "OK", onPress: () => navigation.goBack() }]
-            );
+            // Alert.alert(
+            //     "Success",
+            //     "Habit created successfully!",
+            //     [{ text: "OK", onPress: () => navigation.goBack() }]
+            // );
+            setShowAlert(true);
         } catch (error) {
             console.error('Error saving habit:', error);
             Alert.alert(
@@ -250,6 +260,7 @@ const AddNewHabit = () => {
                     onPress={handleSubmit(saveHabit)}
                 />
             </View>
+            <PaperAlert visible={showAlert} onClose={handleCloseAlert} />
         </View>
     );
 };

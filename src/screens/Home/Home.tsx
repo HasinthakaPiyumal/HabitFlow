@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     FlatList,
     ScrollView,
@@ -6,6 +6,8 @@ import {
     View,
     TouchableOpacity,
     RefreshControl,
+    StyleSheet,
+    Dimensions,
 } from 'react-native';
 import { getTextStyles } from '../../assets/styles/TextStyles';
 import { useTheme } from '../../context/ThemeContext';
@@ -16,6 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation/types';
+import LottieView from 'lottie-react-native';
 
 const statusBarHeight = getStatusBarHeight();
 
@@ -38,6 +41,9 @@ interface HabitCompletion {
     completed: boolean;
 }
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -50,6 +56,14 @@ const Home = () => {
     const [habitCompletions, setHabitCompletions] = useState<HabitCompletion[]>(
         [],
     );
+
+    const animationRef = useRef<LottieView>(null);
+    const [visible, setVisible] = useState(false);
+
+    const playAnimation = () => {
+        setVisible(true);
+        animationRef.current?.play();
+    };
 
     const loadHabits = async () => {
         try {
@@ -77,10 +91,37 @@ const Home = () => {
                         console.log('Today:', today);
                         let todayCompletion = false;
 
+                        // Calculate streak for this habit
+                        let currentStreak = 0;
+
                         if (habit.frequency === 'daily') {
+                            // Check today's completion
                             todayCompletion = loadedCompletions.find(
                                 c => c.habitId === habit.id && c.date === today,
                             )?.completed || false;
+
+                            // Calculate streak for daily habits
+                            if (todayCompletion) {
+                                currentStreak = 1; // Start with 1 for today
+                                let checkDate = new Date();
+
+                                // Look back to find consecutive completions
+                                for (let i = 1; i <= 365; i++) { // Check up to a year back (limit to avoid infinite loops)
+                                    checkDate.setDate(checkDate.getDate() - 1);
+                                    const dateStr = checkDate.toISOString().split('T')[0];
+
+                                    // Check if there's a completion for this date
+                                    const completed = loadedCompletions.find(
+                                        c => c.habitId === habit.id && c.date === dateStr && c.completed
+                                    );
+
+                                    if (completed) {
+                                        currentStreak++;
+                                    } else {
+                                        break; // Streak ends at first missed day
+                                    }
+                                }
+                            }
                         } else if (habit.frequency === 'weekly') {
                             // Get today's date
                             const todayDate = new Date();
@@ -108,6 +149,38 @@ const Home = () => {
 
                             // Mark as completed if any completion records exist for this week
                             todayCompletion = completionsThisWeek.length > 0;
+
+                            // Calculate streak for weekly habits (in weeks)
+                            if (todayCompletion) {
+                                currentStreak = 1; // Start with 1 for this week
+                                let checkWeekStart = new Date(currentWeekStart);
+                                checkWeekStart.setDate(checkWeekStart.getDate() - 7); // Previous week
+
+                                // Check up to 52 weeks back (a year)
+                                for (let i = 1; i <= 52; i++) {
+                                    const checkWeekEnd = new Date(checkWeekStart);
+                                    checkWeekEnd.setDate(checkWeekStart.getDate() + 6);
+
+                                    // Check if there's any completion in this week
+                                    const completedThisWeek = loadedCompletions.find(c => {
+                                        const completionDate = new Date(c.date);
+                                        return (
+                                            c.habitId === habit.id &&
+                                            completionDate >= checkWeekStart &&
+                                            completionDate <= checkWeekEnd &&
+                                            c.completed
+                                        );
+                                    });
+
+                                    if (completedThisWeek) {
+                                        currentStreak++;
+                                        // Move to previous week
+                                        checkWeekStart.setDate(checkWeekStart.getDate() - 7);
+                                    } else {
+                                        break; // Streak ends at first missed week
+                                    }
+                                }
+                            }
                         } else if (habit.frequency === 'monthly') {
                             // Get today's date
                             const todayDate = new Date();
@@ -127,11 +200,49 @@ const Home = () => {
 
                             // Mark as completed if any completion records exist for this month
                             todayCompletion = completionsThisMonth.length > 0;
+
+                            // Calculate streak for monthly habits (in months)
+                            if (todayCompletion) {
+                                currentStreak = 1; // Start with 1 for this month
+                                let currentYear = todayDate.getFullYear();
+                                let currentMonth = todayDate.getMonth();
+
+                                // Check up to 12 months back (a year)
+                                for (let i = 1; i <= 12; i++) {
+                                    // Move to previous month
+                                    currentMonth--;
+                                    if (currentMonth < 0) {
+                                        currentMonth = 11; // December
+                                        currentYear--;
+                                    }
+
+                                    const checkMonthStart = new Date(currentYear, currentMonth, 1);
+                                    const checkMonthEnd = new Date(currentYear, currentMonth + 1, 0);
+
+                                    // Check if there's any completion in this month
+                                    const completedThisMonth = loadedCompletions.find(c => {
+                                        const completionDate = new Date(c.date);
+                                        return (
+                                            c.habitId === habit.id &&
+                                            completionDate >= checkMonthStart &&
+                                            completionDate <= checkMonthEnd &&
+                                            c.completed
+                                        );
+                                    });
+
+                                    if (completedThisMonth) {
+                                        currentStreak++;
+                                    } else {
+                                        break; // Streak ends at first missed month
+                                    }
+                                }
+                            }
                         }
 
                         return {
                             ...habit,
                             completed: todayCompletion,
+                            streak: currentStreak, // Update streak value
                         };
                     });
                 }
@@ -181,6 +292,7 @@ const Home = () => {
             completedHabitsString
         );
         await loadHabits();
+        if (!habit.completed) { playAnimation(); }
         // try {
         //     const currentDate = new Date().toISOString();
         //     const updatedHabit = { ...habit, completed: !habit.completed };
@@ -285,44 +397,82 @@ const Home = () => {
         return (
             <View
                 style={{
-                    marginVertical: 5,
+                    marginVertical: 6,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    backgroundColor: theme.card,
-                    padding: 10,
-                    borderRadius: 10,
+                    backgroundColor: item.completed ? `${theme.primary}10` : theme.card,
+                    padding: 14,
+                    borderRadius: 12,
+                    borderLeftWidth: 4,
+                    borderLeftColor: item.completed ? theme.primary : 'transparent',
                 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                     <View
                         style={{
-                            backgroundColor: `${theme.primary}20`,
+                            backgroundColor: item.completed ? `${theme.primary}30` : `${theme.primary}15`,
                             justifyContent: 'center',
                             alignItems: 'center',
                             width: 60,
                             height: 60,
-                            borderRadius: 10,
+                            borderRadius: 12,
                         }}>
                         <Icon
                             name={item.icon || 'checkbox-outline'}
                             size={32}
-                            color={theme.primary}
+                            color={item.completed ? theme.primary : theme.textSecondary}
                         />
                     </View>
-                    <View style={{ marginLeft: 15, flex: 1 }}>
-                        <Text style={[getTextStyles(theme).subheading, { marginBottom: 0 }]}>
+                    <View style={{ marginLeft: 16, flex: 1 }}>
+                        <Text
+                            style={[
+                                getTextStyles(theme).subheading,
+                                {
+                                    marginBottom: 0,
+                                    fontWeight: item.completed ? '700' : '600',
+                                    color: item.completed ? theme.textPrimary : theme.textPrimary,
+                                },
+                            ]}>
                             {item.title}
                         </Text>
                         <Text
-                            style={[getTextStyles(theme).body, { marginTop: 0 }]}
+                            style={[
+                                getTextStyles(theme).body,
+                                {
+                                    marginTop: 3,
+                                    color: item.completed ? theme.textPrimary : theme.textSecondary,
+                                },
+                            ]}
                             numberOfLines={1}>
                             {item.description || 'No description'}
                         </Text>
                         {item.streak > 0 && (
-                            <Text
-                                style={[getTextStyles(theme).caption, { color: theme.primary }]}>
-                                🔥 {item.streak} day streak
-                            </Text>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginTop: 4,
+                                    backgroundColor: `${theme.primary}15`,
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 3,
+                                    borderRadius: 12,
+                                    alignSelf: 'flex-start',
+                                }}
+                            >
+                                <Text style={{ color: theme.primary, fontSize: 12 }}>🔥</Text>
+                                <Text
+                                    style={[
+                                        getTextStyles(theme).caption,
+                                        {
+                                            color: theme.primary,
+                                            fontWeight: '600',
+                                            marginLeft: 4,
+                                        },
+                                    ]}>
+                                    {item.streak} {item.frequency === 'daily' ? 'day' :
+                                        item.frequency === 'weekly' ? 'week' : 'month'} streak
+                                </Text>
+                            </View>
                         )}
                     </View>
                 </View>
@@ -331,15 +481,22 @@ const Home = () => {
                     style={{
                         borderWidth: 2,
                         borderColor: item.completed ? theme.primary : theme.border,
-                        width: 28,
-                        height: 28,
-                        borderRadius: 6,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: item.completed ? theme.primary : 'transparent',
+                        shadowColor: item.completed ? theme.primary : 'transparent',
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 2,
+                        elevation: item.completed ? 3 : 0,
                     }}>
-                    {item.completed && (
-                        <Icon name="checkmark" size={18} color="#FFFFFF" />
+                    {item.completed ? (
+                        <Icon name="checkmark" size={20} color="#FFFFFF" />
+                    ) : (
+                        <Icon name="add" size={20} color={theme.textSecondary} style={{ opacity: 0.6 }} />
                     )}
                 </TouchableOpacity>
             </View>
@@ -380,6 +537,15 @@ const Home = () => {
                     </View>
                 </TouchableOpacity> */}
             </View>
+
+            <LottieView
+                ref={animationRef}
+                source={require('./../../assets/animations/congratulations.json')}
+                autoPlay={false}
+                loop={false}
+                style={[styles.lottie, { height: visible ? screenWidth - 40 : 0 }]}
+                onAnimationFinish={() => setVisible(false)}
+            />
 
             <ScrollView
                 refreshControl={
@@ -431,7 +597,7 @@ const Home = () => {
                         <Icon
                             name="create-outline"
                             size={60}
-                            color={`${theme.textSecondary}50`}
+                            color={`${theme.textSecondary}`}
                         />
                         <Text
                             style={[
@@ -512,5 +678,27 @@ const Home = () => {
         </View>
     );
 };
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+    },
+    lottie: {
+        width: screenWidth - 40,
+        height: 200,
+        position: 'absolute',
+        zIndex: 1000,
+        top: (screenHeight / 2) - 200,
+        marginLeft: 10,
+        pointerEvents: 'auto',
+    },
+});
 
 export default Home;
